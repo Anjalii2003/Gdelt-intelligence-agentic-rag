@@ -2,15 +2,35 @@
 
 
 
-\## Overview
+An Agentic Retrieval-Augmented Generation (RAG) system designed for intelligence analysis using GDELT news articles. The system combines semantic retrieval, cross-encoder reranking, evidence assessment, and claim-level verification through a multi-stage LangGraph workflow.
 
 
 
-An Agentic Retrieval-Augmented Generation (RAG) system designed to answer intelligence-related queries using GDELT news articles.
+\## Project Overview
 
 
 
-The system combines semantic search, vector retrieval, cross-encoder reranking, evidence assessment, and claim-level verification through a multi-stage LangGraph-based agentic workflow.
+The system processes GDELT news articles and answers intelligence-related queries using retrieved evidence.
+
+
+
+It integrates:
+
+\- Semantic search and vector retrieval.
+
+\- Cross-encoder reranking.
+
+\- Evidence and geographic relevance assessment.
+
+\- Article freshness evaluation.
+
+\- Grounded answer generation.
+
+\- Claim-level verification.
+
+
+
+\*\*Dataset:\*\* 30K+ GDELT articles.
 
 
 
@@ -18,57 +38,83 @@ The system combines semantic search, vector retrieval, cross-encoder reranking, 
 
 
 
-\- Ingested 30K+ GDELT articles into PostgreSQL.
+\- BGE-M3 embedding generation with 1,024 dimensions.
 
-\- Generated 1,024-dimensional embeddings using BGE-M3.
+\- PostgreSQL with pgvector for vector storage.
 
-\- Implemented vector search using PostgreSQL, pgvector, and HNSW indexing.
+\- HNSW indexing for efficient similarity search.
 
-\- Retrieved Top-20 candidate articles and reranked them to Top-5.
+\- Top-20 candidate retrieval followed by Top-5 reranking.
 
-\- Integrated BGE-Reranker-v2-M3 for cross-encoder reranking.
+\- BGE-Reranker-v2-M3 cross-encoder integration.
 
-\- Built a six-stage agentic workflow using LangGraph.
+\- Six-stage LangGraph-based agentic workflow.
 
-\- Integrated Gemini for grounded answer generation.
+\- Gemini-powered answer generation.
 
-\- Implemented evidence assessment and a 90-day freshness window.
+\- Evidence assessment and a 90-day freshness window.
 
-\- Added claim-level verification against retrieved article contexts.
+\- Claim-level verification against retrieved article contexts.
 
-\- Developed a FastAPI retrieval service and Gradio interface.
+\- FastAPI retrieval service.
 
-
-
-\## LangGraph Agentic Workflow
+\- Gradio interface.
 
 
 
-The system uses a six-stage workflow:
+\## Agentic Workflow – LangGraph
 
 
 
-1\. \*\*Query Analysis:\*\* Analyzes the user's query and identifies retrieval requirements.
-
-2\. \*\*Vector Retrieval:\*\* Retrieves relevant articles using BGE-M3 embeddings and pgvector.
-
-3\. \*\*Cross-Encoder Reranking:\*\* Reranks the Top-20 retrieved candidates and selects the Top-5 relevant articles.
-
-4\. \*\*Evidence \& Freshness Assessment:\*\* Evaluates supporting evidence, geographic relevance, and article recency.
-
-5\. \*\*Grounded Answer Generation:\*\* Uses Gemini to generate answers based on retrieved article context.
-
-6\. \*\*Claim-Level Verification:\*\* Checks generated claims against the retrieved article evidence.
+The system uses a six-stage workflow orchestrated through LangGraph.
 
 
 
-\## Retrieval Pipeline
+\### 1. Query Analysis
+
+Analyzes the user's question and identifies retrieval requirements.
 
 
+
+\### 2. Vector Retrieval
+
+Retrieves relevant GDELT articles using BGE-M3 embeddings and PostgreSQL pgvector.
+
+
+
+\### 3. Cross-Encoder Reranking
+
+Reranks the Top-20 retrieved candidates using BGE-Reranker-v2-M3 and selects the Top-5 articles.
+
+
+
+\### 4. Evidence and Freshness Assessment
+
+Evaluates retrieved evidence, geographic relevance, and article recency.
+
+
+
+\### 5. Grounded Answer Generation
+
+Uses Gemini to generate answers based on retrieved article contexts.
+
+
+
+\### 6. Claim-Level Verification
+
+Checks generated claims against retrieved article evidence to identify unsupported statements.
+
+
+
+\## Retrieval Architecture
+
+
+
+\- \*\*Article Collection:\*\* 30K+ GDELT articles
 
 \- \*\*Embedding Model:\*\* BGE-M3
 
-\- \*\*Embedding Dimension:\*\* 1,024
+\- \*\*Embedding Dimensions:\*\* 1,024
 
 \- \*\*Vector Database:\*\* PostgreSQL with pgvector
 
@@ -76,9 +122,11 @@ The system uses a six-stage workflow:
 
 \- \*\*Initial Retrieval:\*\* Top-20
 
-\- \*\*Reranking:\*\* BGE-Reranker-v2-M3
+\- \*\*Reranking Model:\*\* BGE-Reranker-v2-M3
 
-\- \*\*Final Context:\*\* Top-5 articles
+\- \*\*Final Context:\*\* Top-5
+
+\- \*\*Freshness Window:\*\* 90 days
 
 
 
@@ -86,25 +134,31 @@ The system uses a six-stage workflow:
 
 
 
-The evaluation framework covers retrieval quality, ranking performance, and answer generation quality.
+The evaluation framework covers retrieval performance, ranking quality, and answer generation quality.
 
 
 
-| Category | Metric | Purpose |
+\### Retrieval Metrics
 
-|---|---|---|
+\- \*\*Precision@K:\*\* Measures the relevance of retrieved articles.
 
-| Retrieval | Precision@K | Measures the relevance of retrieved articles |
+\- \*\*Recall@K:\*\* Measures the coverage of relevant articles.
 
-| Retrieval | Recall@K | Measures coverage of relevant articles |
 
-| Ranking | MRR | Measures the position of the first relevant result |
 
-| Ranking | nDCG@K | Measures the quality of ranked retrieval results |
+\### Ranking Metrics
 
-| Generation | Faithfulness | Evaluates whether generated answers are supported by retrieved evidence |
+\- \*\*Mean Reciprocal Rank (MRR):\*\* Measures the position of the first relevant result.
 
-| Generation | Answer Relevancy | Evaluates how well answers address the user's query |
+\- \*\*Normalized Discounted Cumulative Gain (nDCG):\*\* Evaluates the quality of ranked retrieval results.
+
+
+
+\### Generation Metrics
+
+\- \*\*Faithfulness:\*\* Evaluates whether generated answers are supported by retrieved evidence.
+
+\- \*\*Answer Relevancy:\*\* Measures how well generated answers address user queries.
 
 
 
@@ -112,35 +166,69 @@ Evaluation scores will be reported after benchmark testing.
 
 
 
+\## Google Colab Implementation
+
+
+
+The repository includes a Google Colab notebook containing the implementation and experiments.
+
+
+
+\*\*Notebook:\*\* `GDELT\_Agentic\_RAG.ipynb`
+
+
+
+The notebook documents the implementation of the Agentic RAG pipeline, including:
+
+
+
+\- Article processing and preparation.
+
+\- BGE-M3 embedding generation.
+
+\- PostgreSQL and pgvector integration.
+
+\- Semantic vector retrieval.
+
+\- Cross-encoder reranking.
+
+\- LangGraph agent orchestration.
+
+\- Gemini integration.
+
+\- Evidence assessment.
+
+\- Claim-level verification.
+
+\- Retrieval and generation evaluation methodology.
+
+
+
 \## Technology Stack
 
 
 
-| Component | Technology |
+\- \*\*Programming Language:\*\* Python
 
-|---|---|
+\- \*\*Agent Orchestration:\*\* LangGraph
 
-| Programming Language | Python |
+\- \*\*LLM:\*\* Gemini
 
-| Agent Orchestration | LangGraph |
+\- \*\*Embedding Model:\*\* BGE-M3
 
-| LLM | Gemini |
+\- \*\*Reranker:\*\* BGE-Reranker-v2-M3
 
-| Embedding Model | BGE-M3 |
+\- \*\*Database:\*\* PostgreSQL
 
-| Reranker | BGE-Reranker-v2-M3 |
+\- \*\*Vector Search:\*\* pgvector and HNSW
 
-| Database | PostgreSQL |
+\- \*\*Backend:\*\* FastAPI
 
-| Vector Search | pgvector, HNSW |
+\- \*\*Interface:\*\* Gradio
 
-| Backend | FastAPI |
+\- \*\*Deployment:\*\* Docker
 
-| Interface | Gradio |
-
-| Deployment | Docker |
-
-| Experimentation | Google Colab |
+\- \*\*Experimentation:\*\* Google Colab
 
 
 
@@ -154,15 +242,37 @@ GDELT-Agentic-RAG/
 
 │
 
-├── app/                       # Application and agent workflow
+├── app/
 
-├── database/                  # Database components
+│   └── Application logic and agent workflow
 
-├── migration/                 # Database migrations
+│
 
-├── GDELT\_Agentic\_RAG.ipynb    # Google Colab implementation
+├── database/
 
-├── README.md                  # Project documentation
+│   └── Database components
+
+│
+
+├── migration/
+
+│   └── Database migration scripts
+
+│
+
+├── GDELT\_Agentic\_RAG.ipynb
+
+│   └── Google Colab implementation
+
+│
+
+├── README.md
+
+│
+
+├── requirements.txt
+
+│
 
 └── .gitignore
 
@@ -170,23 +280,29 @@ GDELT-Agentic-RAG/
 
 
 
-\## Running the Project
+\## Setup and Execution
 
 
 
 1\. Clone the repository.
 
-2\. Configure the required environment variables.
+2\. Create a Python virtual environment.
 
-3\. Set up PostgreSQL with pgvector.
+3\. Install the required dependencies from `requirements.txt`.
 
-4\. Start the application services using Docker.
+4\. Configure environment variables.
 
-5\. Access the FastAPI service and Gradio interface.
+5\. Set up PostgreSQL with pgvector.
+
+6\. Start the application services using Docker.
+
+7\. Access the FastAPI backend and Gradio interface.
 
 
 
-Refer to the application configuration and implementation files for detailed setup instructions.
+Refer to the application configuration and implementation files for detailed execution instructions.
+
+
 
 
 
